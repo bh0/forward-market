@@ -17,16 +17,32 @@ app.get('/', function (req, res, next) {
 	res.render('home');
 });
 
+
+// when we get mongo on the pi this will be deleted
+var cache = {},
+	hacks = {
+		"049000004632": "0049000004632"
+	};
+
 app.get('/upc/:code', function (req, res, next){
 	var code = req.params.code;
 
 	if(code){
-res.send('{"valid":"true","number":"04976400","itemname":"Sprite 20 oz","description":"Lemon-Lime Soda","price":"1.09","ratingsup":0,"ratingsdown":0}');
 
-		// we should check to see if we have a cached copy
-		// request("http://upcdatabase.org/api/json/9cbbaa1e9947081067e21d5b8d81649d/" + code, function (err, response, body){
-		// 	res.send(body);
-		// });
+		if(hacks[code]){
+			code = hacks[code];
+		}
+		// usefull test
+		//res.send('{"valid":"true","number":"04976400","itemname":"Sprite 20 oz","description":"Lemon-Lime Soda","price":"1.09","ratingsup":0,"ratingsdown":0}');
+
+		if(cache[code]) {
+			res.send(cache[code]);
+		} else {
+			request("http://upcdatabase.org/api/json/9cbbaa1e9947081067e21d5b8d81649d/" + code, function (err, response, body){
+				cache[code] = body;
+				res.send(cache[code]);
+			});
+		}
 	}
 });
 

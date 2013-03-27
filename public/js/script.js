@@ -5,9 +5,9 @@ var UPCModel = Backbone.Model.extend({
 	defaults: {
 		"valid": "true",
 		"number": "0",
-		// "itemname": "UPC Database Testing Code",
+		"itemname": "Loading...",
 		// "description": "http:\/\/upcdatabase.org\/code\/0111222333446",
-		"price": 1.25,
+		"price": 0.00,
 		"ratingsup": 0,
 		"ratingsdown": 0
 	},
@@ -17,21 +17,26 @@ var UPCModel = Backbone.Model.extend({
 			if(this.get("id") == this.get("number")){
 				this.set("id", new Date().getTime());
 			}
-		})
+		});
 	}
 });
 
-var shoppingCart = new Backbone.Collection({
-	model: UPCModel
+var ShoppingCart = Backbone.Collection.extend({
+	model: UPCModel,
+
+	getTotal: function (){
+		// thanks winchester
+		return Math.round(this.reduce(function(memo, item){return memo + parseFloat(item.get('price'), 10);},0) *100) / 100;
+	}
 });
 
 var ShoppingCartView = Backbone.View.extend({
 	initialize: function (options){
 		this.listenTo(this.collection, "add", this.addItem);
+		this.listenTo(this.collection, "change", this.handleChange);
 	},
 
 	addItem: function (model){
-		console.log(arguments);
 		var el = $("<div>");
 		new UPCView({
 			model: model,
@@ -42,20 +47,30 @@ var ShoppingCartView = Backbone.View.extend({
 	},
 
 	handleChange: function (){
-		this.$(".fm-total", "$54.00")
+		this.$(".fm-total").text(this.collection.getTotal());
 	}
 });
 
 var UPCView = Backbone.View.extend({
+	className: "fm-item",
+
 	initialize: function (options){
 		this.listenTo(this.model, "change", this.render);
+		this.$el.addClass(this.className);
 	},
 
 	render: function (){
-		this.$el.html(this.model.get("itemname") + " - $" +this.model.get("price"));
+
+		var name = this.model.get("itemname");
+		if(!name.length){
+			name = this.model.get("description");
+		}
+
+		this.$el.html("<span class='fm-item-name'>" + name + "</span><span class='fm-item-price fm-currency'>" +this.model.get("price") + "</span>");
 	}
 });
 
+var shoppingCart = new ShoppingCart();
 var shoppingCartView = new ShoppingCartView({
 	el: ".sidebar-nav",
 	collection: shoppingCart
@@ -80,8 +95,6 @@ var handleNewBarcode = function (){
 	timeout = false;
 
 	if(myCode.length){
-
-		console.log(myCode);
 
 		var upc = new UPCModel({id: myCode});
 		shoppingCart.add(upc);
