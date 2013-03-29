@@ -1,0 +1,3 @@
+#! /bin/bash
+/usr/bin/chromium --kiosk http://127.0.0.1:3001/ --display=:0.0
+#/usr/bin/chromium --kiosk http://10.141.1.53:3000/dashboard/Valhalla --display=:0.0

@@ -76,6 +76,7 @@ serialPort.on("open", function () {
 			cardID += (h.length === 1 ? "0" : "") + h;
 		}
 
+		console.log("card", cardID);
 		io.sockets.emit("id", {data: cardID});
 	});  
 
