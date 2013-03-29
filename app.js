@@ -4,6 +4,7 @@ var express = require('express'),
 	app = express(),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server),
+	request = require('request'),
 
 	exphbs  = require('express3-handlebars'),
 	path = require('path')
@@ -76,8 +77,18 @@ serialPort.on("open", function () {
 			cardID += (h.length === 1 ? "0" : "") + h;
 		}
 
-		console.log("card", cardID);
-		io.sockets.emit("id", {data: cardID});
+		var ip = "10.127.1.6";
+		request("http://" + ip + ":8080/attask/api-internal/login?username=admin@user.attask&password=user", function (req, res, body){
+			var data = JSON.parse(body);
+
+			request("http://" + ip + ":8080/attask/api-internal/User/search?fields=highFiveCount&extRefID=" + cardID +"&sessionID="+ data.data.sessionID, function (r, e, b){
+				var userdData = JSON.parse(b);
+
+				console.log("card", cardID);
+				io.sockets.emit("id", b.data[0]);
+			});
+		});
+
 	});  
 
 	serialPort.write(0x02, function(err, results) {
@@ -86,6 +97,8 @@ serialPort.on("open", function () {
 		}
 	});  
 });
+
+
 
 
 function unpack(str) {
