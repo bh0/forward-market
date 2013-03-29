@@ -26,4 +26,16 @@ body {
 	width: 1224px;
 	height: 889px;
 	margin: 0 auto;
+	position: relative;
+}	
+
+.sidebar-nav {
+
+position: absolute;
+right: 0px;
+top: 250px;
+border: none;
+background: none;
+width: 250px;
+box-shadow: none;
 }

@@ -1,16 +1,29 @@
+
+
 var express = require('express'),
+	app = express(),
+	server = require('http').createServer(app),
+	io = require('socket.io').listen(server),
+
 	exphbs  = require('express3-handlebars'),
-	path = require('path'),
-	request = require('request'),
+	path = require('path')
 
-	app = express();
+	;
 
+server.listen(3001);
+
+
+
+var userSocket = io.on('connection', function (socket) {
+	//setInterval(sendTest.bind(socket), 6000);
+	io.sockets.emit("hey", {data: "Stuff"});
+});
 
 app.use("/js", express.static(path.join(__dirname, '/public/js/')));
 app.use("/css", express.static(path.join(__dirname, '/public/css/')));
 app.use("/img", express.static(path.join(__dirname, '/public/img/')));
 
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', exphbs({defaultLayout: 'fake'}));
 app.set('view engine', 'handlebars');
 
 app.get('/', function (req, res, next) {
@@ -46,4 +59,39 @@ app.get('/upc/:code', function (req, res, next){
 	}
 });
 
-app.listen(3000);
+
+var SerialPort = require("serialport").SerialPort;
+var serialPort = new SerialPort("/dev/ttyAMA0", {
+	baudrate: 9600
+});
+
+serialPort.on("open", function () {
+	console.log('open');
+	serialPort.on('data', function(data) {
+		var charCodes = unpack(data),
+			cardID = "";
+
+		for(var i = 0, len = charCodes.length; i<len; i++){
+			var h = charCodes[i].toString(16);
+			cardID += (h.length === 1 ? "0" : "") + h;
+		}
+
+		io.sockets.emit("id", {data: cardID});
+	});  
+
+	serialPort.write(0x02, function(err, results) {
+		if(err){
+			console.log("Error while writing", err);
+		}
+	});  
+});
+
+
+function unpack(str) {
+    var bytes = [];
+    for(var i = 0; i < str.length; i++) {
+        var char = str[i];
+        bytes.push(char & 0xFF);
+    }
+    return bytes;
+}
