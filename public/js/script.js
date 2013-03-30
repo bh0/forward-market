@@ -24,6 +24,23 @@ var UPCModel = Backbone.Model.extend({
 var ShoppingCart = Backbone.Collection.extend({
 	model: UPCModel,
 
+	initialize: function(options){
+		this.on("add", this.handleAdd);
+	},
+
+	timeout: false,
+	handleAdd: function (){
+		if(this.timeout){
+			clearTimeout(this.timeout);
+		}
+
+		this.timeout = _.delay(this.emptyCart.bind(this), 10000);
+	},
+
+	emptyCart: function(){
+		this.reset();
+	},
+
 	getTotal: function (){
 		// thanks winchester
 		return Math.round(this.reduce(function(memo, item){return memo + parseFloat(item.get('price'), 10);},0) *100) / 100;
@@ -31,12 +48,20 @@ var ShoppingCart = Backbone.Collection.extend({
 });
 
 var ShoppingCartView = Backbone.View.extend({
+
+	socket: null, // used for the rfid badge
 	initialize: function (options){
 		this.listenTo(this.collection, "add", this.addItem);
+		this.listenTo(this.collection, "reset", this.handleReset);
 		this.listenTo(this.collection, "change", this.handleChange);
+
+		this.socket = io.connect();
+		this.listenTo(this.socket, 'id', this.handleCheckout);
+		this.$el.addClass("empty");
 	},
 
 	addItem: function (model){
+		this.$el.removeClass("empty");
 		var el = $("<div>");
 		new UPCView({
 			model: model,
@@ -48,7 +73,19 @@ var ShoppingCartView = Backbone.View.extend({
 
 	handleChange: function (){
 		this.$(".fm-total").text(this.collection.getTotal());
+	},
+
+	handleReset: function (){
+		this.$(".fm-items").html("");
+		this.$el.addClass("empty");
+	},
+
+	handleCheckout: function(){
+		if(this.$el.hasClass("empty")){
+			this.$(".fm-items").html("Thanks!!!");
+		}
 	}
+
 });
 
 var UPCView = Backbone.View.extend({
@@ -102,6 +139,6 @@ var handleNewBarcode = function (){
 		upc.fetch();
 
 	}
-}
+};
 
 

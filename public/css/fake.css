@@ -30,12 +30,43 @@ body {
 }	
 
 .sidebar-nav {
+	position: absolute;
+	right: 0;
+	top: 250px;
+	border: none;
+	background: none;
+	width: 250px;
+	box-shadow: none;
+}
+.scanitems {
+	display: none;
+}
 
-position: absolute;
-right: 0px;
-top: 250px;
-border: none;
-background: none;
-width: 250px;
-box-shadow: none;
+.sidebar-nav.empty .scanitems{
+	display: block;
+	background: url(/img/scanitems.png) center no-repeat;
+	height: 100px;
+}
+
+.fm-total {
+background: #EDEDED;
+padding: 20px;
+float: none;
+text-align: center;
+font-size: 20px;
+color: #555;
+}
+
+.sidebar-nav.empty .fm-total {
+	display: none;
+}
+
+
+.sidebar-nav.empty .scancard {
+	display: none;
+}
+
+.sidebar-nav .scancard{
+	background: url(/img/scancard.png) center no-repeat;
+	height: 100px;
 }

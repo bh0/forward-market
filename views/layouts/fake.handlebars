@@ -34,8 +34,14 @@
 <body>
 <div id="container">
 <div class="well sidebar-nav clearfix">
+
+	<div class="scanitems"></div>
+
 	<div class="fm-items"></div>
 	<div class="fm-total fm-currency">0.00</div>
+
+
+	<div class="scancard"></div>
 </div>
 
 </div>
@@ -47,15 +53,8 @@
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/underscore-min.js"></script>
 <script src="/js/backbone-min.js"></script>
-<script src="/js/script.js"></script>
-
 <script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io.connect();
-  socket.on('id', function (data) {
-    console.log(data);
-  });
-</script>
+<script src="/js/script.js"></script>
 
 </body>
 </html>
