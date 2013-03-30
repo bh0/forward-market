@@ -77,17 +77,23 @@ serialPort.on("open", function () {
 			cardID += (h.length === 1 ? "0" : "") + h;
 		}
 
-		var ip = "10.127.1.6";
-		request("http://" + ip + ":8080/attask/api-internal/login?username=admin@user.attask&password=user", function (req, res, body){
-			var data = JSON.parse(body);
+		if(cardID.length === 8){
 
-			request("http://" + ip + ":8080/attask/api-internal/User/search?fields=highFiveCount&extRefID=" + cardID +"&sessionID="+ data.data.sessionID, function (r, e, b){
-				var userdData = JSON.parse(b);
+			console.log("lookup card", cardID);
+			var ip = "10.127.1.6";
+			request("http://" + ip + ":8080/attask/api-internal/login?username=admin@user.attask&password=user", function (req, res, body){
+				var data = JSON.parse(body);
 
-				console.log("card", cardID);
-				io.sockets.emit("id", b.data[0]);
+				request("http://" + ip + ":8080/attask/api-internal/User/search?fields=highFiveCount&extRefID=" + cardID +"&sessionID="+ data.data.sessionID, function (r, e, b){
+					var userData = JSON.parse(b);
+					if(userData.data.length){
+
+						console.log("card found", cardID);
+						io.sockets.emit("id", userData.data[0]);
+					}
+				});
 			});
-		});
+		}
 
 	});  
 
