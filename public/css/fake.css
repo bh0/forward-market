@@ -3,8 +3,16 @@
 	margin: 2px 10px;
 }
 
+.thanks,
 .fm-item {
 	margin: 1px 10px;
+}
+
+.thanks {
+	
+text-align: center;
+font-size: 20px;
+color: #555;	
 }
 
 .fm-item-price {
@@ -54,7 +62,7 @@ padding: 20px;
 float: none;
 text-align: center;
 font-size: 20px;
-color: #555;
+color: #555;	
 }
 
 .sidebar-nav.empty .fm-total {

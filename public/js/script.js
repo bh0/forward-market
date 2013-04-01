@@ -56,7 +56,7 @@ var ShoppingCartView = Backbone.View.extend({
 		this.listenTo(this.collection, "change", this.handleChange);
 
 		this.socket = io.connect();
-		this.listenTo(this.socket, 'id', this.handleCheckout);
+		this.listenTo(this.socket, 'id', this.handleCheckout.bind(this));
 		this.$el.addClass("empty");
 	},
 
@@ -80,9 +80,10 @@ var ShoppingCartView = Backbone.View.extend({
 		this.$el.addClass("empty");
 	},
 
-	handleCheckout: function(){
-		if(this.$el.hasClass("empty")){
-			this.$(".fm-items").html("Thanks!!!");
+	handleCheckout: function(data){
+		console.log(data);
+		if(!this.$el.hasClass("empty")){
+			this.$(".fm-items").html("<div class='thanks'>Thanks!!!</div>");
 		}
 	}
 
@@ -103,7 +104,7 @@ var UPCView = Backbone.View.extend({
 			name = this.model.get("description");
 		}
 
-		this.$el.html("<span class='fm-item-name'>" + name + "</span><span class='fm-item-price fm-currency'>" +this.model.get("price") + "</span>");
+		this.$el.html("<span class='fm-item-name'>" + name + "</span><span class='fm-item-price fm-currency'>" + this.model.get("price") + "</span>");
 	}
 });
 

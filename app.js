@@ -31,6 +31,9 @@ app.get('/', function (req, res, next) {
 	res.render('home');
 });
 
+// setInterval(function (){
+// 	lookupCard("fd71de09");
+// }, 10000);
 
 // when we get mongo on the pi this will be deleted
 var cache = {},
@@ -78,41 +81,44 @@ serialPort.on("open", function () {
 		}
 
 		if(cardID.length === 8){
-
-			console.log("lookup card", cardID);
-			//var ip = "10.127.1.6";
-			var ip = "10.141.1.58";
-			request("http://" + ip + ":8080/attask/api-internal/login?username=admin@user.attask&password=user", function (req, res, body){
-				var data = JSON.parse(body);
-
-				request("http://" + ip + ":8080/attask/api-internal/User/search?fields=highFiveCount&extRefID=" + cardID +"&sessionID="+ data.data.sessionID, function (r, e, b){
-					var userData = JSON.parse(b);
-					if(userData.data.length){
-
-						console.log("card found", cardID);
-						io.sockets.emit("id", userData.data[0]);
-					}
-				});
-			});
+			lookupCard(cardID);
 		}
 
-	});  
+	});
 
 	serialPort.write(0x02, function(err, results) {
 		if(err){
 			console.log("Error while writing", err);
 		}
-	});  
+	});
 });
 
 
+
+function lookupCard(cardID){
+	console.log("lookup card", cardID);
+	//var ip = "10.127.1.6";
+	var ip = "10.141.1.58";
+	request("http://" + ip + ":8080/attask/api-internal/login?username=admin@user.attask&password=user", function (req, res, body){
+		var data = JSON.parse(body);
+
+		request("http://" + ip + ":8080/attask/api-internal/User/search?fields=highFiveCount&extRefID=" + cardID +"&sessionID="+ data.data.sessionID, function (r, e, b){
+			var userData = JSON.parse(b);
+			if(userData.data.length){
+
+				console.log("card found", cardID);
+				io.sockets.emit("id", userData.data[0]);
+			}
+		});
+	});
+}
 
 
 function unpack(str) {
     var bytes = [];
     for(var i = 0; i < str.length; i++) {
-        var char = str[i];
-        bytes.push(char & 0xFF);
+        var c = str[i];
+        bytes.push(c & 0xFF);
     }
     return bytes;
 }
