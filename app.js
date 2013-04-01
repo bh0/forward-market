@@ -80,7 +80,8 @@ serialPort.on("open", function () {
 		if(cardID.length === 8){
 
 			console.log("lookup card", cardID);
-			var ip = "10.127.1.6";
+			//var ip = "10.127.1.6";
+			var ip = "10.141.1.58";
 			request("http://" + ip + ":8080/attask/api-internal/login?username=admin@user.attask&password=user", function (req, res, body){
 				var data = JSON.parse(body);
 
