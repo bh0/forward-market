@@ -1,0 +1,14 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.5
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:minimatch:20160620':
+    - express3-handlebars > glob > minimatch:
+        patched: '2019-10-11T15:22:36.601Z'
+  'npm:semver:20150403':
+    - express3-handlebars > semver:
+        patched: '2019-10-11T15:22:36.601Z'
+  'npm:uglify-js:20151024':
+    - express3-handlebars > handlebars > uglify-js:
+        patched: '2019-10-11T15:22:36.601Z'
